@@ -1,4 +1,5 @@
 // Supabase Server-side Rendering (Server Client)
+// NOT BEING USED AS OF 8/7/25
 
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
