@@ -70,23 +70,42 @@ export default function ReportsPage() {
       pendingPayments: 0,
     };
 
-    const monthlyRevenue = salesData.reduce((acc: Record<string, number>, sale: SalesEntry) => {
+    /*const monthlyRevenue = salesData.reduce((acc: Record<string, number>, sale: SalesEntry) => {
       const month = new Date(sale.date).toLocaleString("default", {
         month: "short",
       });
       acc[month] = (acc[month] || 0) + sale.totalAmount;
       return acc;
+    }, {});*/
+
+    // Monthly revenue data
+    const monthlyRevenue = salesData.reduce((acc: Record<string, number>, sale) => {
+      // Make sure sale.date exists and is valid
+      if (!sale.date) return acc;
+      const month = new Date(sale.date).toLocaleString("default", { month: "short" });
+      // Use sale.total_revenue or 0 if missing
+      acc[month] = (acc[month] || 0) + (sale.total_revenue ?? 0);
+      return acc;
     }, {});
+
     const monthlyData = Object.entries(monthlyRevenue).map(
       ([month, revenue]) => ({ month, revenue })
     );
 
-    const categoryRevenue = salesData.reduce((acc: Record<string, number>, sale: SalesEntry) => {
-      acc[sale.revenueCategory] =
-        (acc[sale.revenueCategory] || 0) + sale.totalAmount;
+    /*const categoryRevenue = salesData.reduce((acc: Record<string, number>, sale: SalesEntry) => {
+      acc[sale.revenue_category] =
+        (acc[sale.revenue_category] || 0) + sale.totalAmount;
+      return acc;
+    }, {});*/
+
+    // Category revenue data
+    const categoryRevenue = salesData.reduce((acc: Record<string, number>, sale) => {
+      const category = sale.revenue_category ?? "Unknown";
+      acc[category] = (acc[category] || 0) + (sale.total_revenue ?? 0);
       return acc;
     }, {});
-    const categoryData = Object.entries(categoryRevenue).map(
+
+    /*const categoryData = Object.entries(categoryRevenue).map(
       ([category, revenue]) => ({
         category,
         revenue,
@@ -96,18 +115,38 @@ export default function ReportsPage() {
           100
         ).toFixed(1),
       })
-    );
+    );*/
 
-    const productSales = salesData.reduce((acc: Record<string, number>, sale: SalesEntry) => {
+    const totalRevenueSum = salesData.reduce((sum, sale) => sum + (sale.total_revenue ?? 0), 0);
+
+    const categoryData = Object.entries(categoryRevenue).map(([category, revenue]) => ({
+      category,
+      revenue,
+      percentage: ((revenue / totalRevenueSum) * 100).toFixed(1),
+    }));
+
+    /* const productSales = salesData.reduce((acc: Record<string, number>, sale: SalesEntry) => {
       acc[sale.product] = (acc[sale.product] || 0) + sale.quantity;
       return acc;
     }, {});
     const topProducts = Object.entries(productSales)
       .sort(([, a], [, b]) => b - a)
       .slice(0, 5)
+      .map(([product, quantity]) => ({ product, quantity })); */
+
+    // Top products by quantity sold
+    const productSales = salesData.reduce((acc: Record<string, number>, sale) => {
+      const product = sale.product ?? "Unknown";
+      acc[product] = (acc[product] || 0) + (sale.quantity ?? 0);
+      return acc;
+    }, {});
+
+    const topProducts = Object.entries(productSales)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 5)
       .map(([product, quantity]) => ({ product, quantity }));
 
-    const paymentStatus = salesData.reduce((acc: Record<string, number>, sale: SalesEntry) => {
+    /*const paymentStatus = salesData.reduce((acc: Record<string, number>, sale: SalesEntry) => {
       acc[sale.paymentStatus] = (acc[sale.paymentStatus] || 0) + 1;
       return acc;
     }, {});
@@ -117,13 +156,34 @@ export default function ReportsPage() {
         count,
         percentage: ((count / salesData.length) * 100).toFixed(1),
       })
-    );
+    );*/
+
+    // Payment status distribution (using 'status' column)
+    const paymentStatus = salesData.reduce((acc: Record<string, number>, sale) => {
+      const status = sale.status ?? "Unknown";
+      acc[status] = (acc[status] || 0) + 1;
+      return acc;
+    }, {});
+
+    const paymentData = Object.entries(paymentStatus).map(([status, count]) => ({
+      status,
+      count,
+      percentage: ((count / salesData.length) * 100).toFixed(1),
+    }));
 
     // const totalRevenue = salesData.reduce((sum, sale) => sum + sale.totalAmount, 0);
-    const totalRevenue = salesData.reduce(
+    /*const totalRevenue = salesData.reduce(
       (sum, sale) => sum + (Number(sale.total_revenue) || 0),
       0
-    );
+    );*/
+
+    const totalOrders = salesData.length;
+    const averageOrderValue = totalOrders > 0 ? totalRevenueSum / totalOrders : 0;
+
+    // Pending payments = count of sales where status is Pending or Partial
+    const pendingPayments = salesData.filter(
+      (sale) => sale.status === "Pending" || sale.status === "Partial"
+    ).length;
 
 
     return {
@@ -131,12 +191,10 @@ export default function ReportsPage() {
       categoryData,
       topProducts,
       paymentData,
-      totalRevenue,
-      totalOrders: salesData.length,
-      averageOrderValue: salesData.length > 0 ? totalRevenue / salesData.length : 0,
-      pendingPayments: salesData.filter(
-        (sale) => sale.paymentStatus === "Pending" || sale.paymentStatus === "Partial"
-      ).length,
+      totalRevenue: totalRevenueSum,
+      totalOrders,
+      averageOrderValue,
+      pendingPayments,
     };
   }, [salesData]);
 
