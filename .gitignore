@@ -9,6 +9,8 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+bun.lock*
+.bun/
 
 # testing
 /coverage
@@ -39,3 +41,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+env/
+venv/
+ENV/
+
+# Pycharm IDE files
+.idea/

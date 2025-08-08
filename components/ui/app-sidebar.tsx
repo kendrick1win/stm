@@ -31,6 +31,14 @@ const routes = [
     disabled: false,
   },
   {
+    id: "reports-db",
+    label: "Reports-db",
+    icon: BarChart3,
+    href: "/reports-db",
+    color: "text-violet-500",
+    disabled: false,
+  },
+  {
     id: "sales",
     label: "Sales",
     icon: FileText,

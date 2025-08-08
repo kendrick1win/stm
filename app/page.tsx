@@ -17,7 +17,7 @@ import {
   Package,
   Users,
 } from "lucide-react";
-import { sampleSalesData, SalesEntry } from "@/lib/store";
+import { sampleSalesData, SalesEntry1 } from "@/lib/store";
 import { useMemo } from "react";
 import {
   BarChart,
@@ -54,7 +54,7 @@ export default function ReportsPage() {
     };
 
     // Monthly revenue data
-    const monthlyRevenue = salesData.reduce((acc: Record<string, number>, sale: SalesEntry) => {
+    const monthlyRevenue = salesData.reduce((acc: Record<string, number>, sale: SalesEntry1) => {
       const month = new Date(sale.date).toLocaleString("default", {
         month: "short",
       });
@@ -70,7 +70,7 @@ export default function ReportsPage() {
     );
 
     // Category revenue data
-    const categoryRevenue = salesData.reduce((acc: Record<string, number>, sale: SalesEntry) => {
+    const categoryRevenue = salesData.reduce((acc: Record<string, number>, sale: SalesEntry1) => {
       acc[sale.revenueCategory] =
         (acc[sale.revenueCategory] || 0) + sale.totalAmount;
       return acc;
@@ -89,7 +89,7 @@ export default function ReportsPage() {
     );
 
     // Top products
-    const productSales = salesData.reduce((acc: Record<string, number>, sale: SalesEntry) => {
+    const productSales = salesData.reduce((acc: Record<string, number>, sale: SalesEntry1) => {
       acc[sale.product] = (acc[sale.product] || 0) + sale.quantity;
       return acc;
     }, {});
@@ -100,7 +100,7 @@ export default function ReportsPage() {
       .map(([product, quantity]) => ({ product, quantity }));
 
     // Payment status distribution
-    const paymentStatus = salesData.reduce((acc: Record<string, number>, sale: SalesEntry) => {
+    const paymentStatus = salesData.reduce((acc: Record<string, number>, sale: SalesEntry1) => {
       acc[sale.paymentStatus] = (acc[sale.paymentStatus] || 0) + 1;
       return acc;
     }, {});

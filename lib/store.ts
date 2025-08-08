@@ -1,6 +1,6 @@
 "use client";
 
-export type SalesEntry = {
+export type SalesEntry1 = {
   id: string;
   status: string;
   invoiceNo: string;
@@ -25,6 +25,30 @@ export type SalesEntry = {
   paymentStatus: string;
   remainingBalance: number;
 };
+
+export type SalesEntry = {
+  id: string; // uuid
+  invoice_num: number; // real
+  date: string | null; // date
+  month: string | null; // text
+  description: string | null; // text
+  revenue_category: string | null; // text
+  revenue_type: string | null; // text
+  customer: string | null; // text
+  product: string | null; // text
+  quantity: number | null; // integer
+  unit: string | null; // text
+  unit_price: number | null; // real
+  total_revenue: number | null; // integer
+  discount_percent: number | null; // integer
+  discount_amount: number | null; // integer
+  net_revenue: number | null; // integer
+  payment_received: number | null; // integer
+  accounts_receivable: number | null; // integer
+  notes: string | null; // text
+  status: string; // text NOT NULL
+};
+
 
 export type Customer = {
   id: string;
@@ -53,7 +77,7 @@ export type Product = {
   createdAt: string;
 };
 
-export const sampleSalesData: SalesEntry[] = [
+export const sampleSalesData: SalesEntry1[] = [
   {
     id: "1",
     status: "Completed",
